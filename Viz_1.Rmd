@@ -1,0 +1,234 @@
+---
+title: "Viz I"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(ggridges)
+library(p8105.datasets)
+```
+
+Import the weather data
+
+```{r}
+data("weather_df")
+```
+
+Making our first plot :-)
+
+```{r}
+ggplot(data=weather_df, mapping=aes(x=tmin, y=tmax)) +
+  geom_point()
+```
+
+```{r}
+weather_df |> 
+  ggplot(aes(x=tmin, y=tmax))+
+  geom_point()
+```
+
+```{r}
+ggp_weather_scatterplot=
+  weather_df |> 
+  ggplot(aes(x=tmin, y=tmax))+
+  geom_point()
+
+ggp_weather_scatterplot
+```
+
+Check that some rows are missing.
+
+
+```{r}
+weather_df |> 
+  filter(is.na(tmax))
+```
+
+##Fancier scatterplots!
+
+```{r}
+weather_df |> 
+  ggplot(aes(x=tmin, y=tmax, color=name))+
+  geom_point(alpha=0.3)+
+  geom_smooth(se=FALSE)
+```
+
+where you define aesthetics can matter
+
+```{r}
+weather_df |> 
+  ggplot(aes(x=tmin, y=tmax))+
+  geom_point(aes(color=name, size=prcp),alpha=0.3)+
+  geom_smooth(se=FALSE)
+```
+
+Use faceting real quick
+
+```{r}
+weather_df |> 
+  ggplot(aes(x=tmin, y=tmax))+
+  geom_point(aes(color=name), alpha=0.3, size=0.8)+
+  geom_smooth(se=FALSE)+
+  facet_grid(. ~ name)
+
+weather_df |> 
+  ggplot(aes(x=tmin, y=tmax))+
+  geom_point(aes(color=name), alpha=0.3, size=0.8)+
+  geom_smooth(se=FALSE)+
+  facet_grid(name ~ .)
+```
+
+Let's make a somewhat more interesting scatterplot
+
+```{r}
+weather_df |> 
+  ggplot(aes(x=tmin, y=tmax, color=name, shape=name))+
+  geom_point(aes(size=prcp),alpha=0.3)+
+  geom_smooth(se=FALSE)+
+  facet_grid(. ~ name)
+```
+
+
+Leraning Assessment 1
+
+```{r}
+weather_df |> 
+  janitor::clean_names() |> 
+  filter(name == "CentralPark_NY") |> 
+  mutate(
+    tmax_fahr = tmax * (9/5)+32,
+    tmin_fahr = tmin * (9/5)+32 
+    )|> 
+  ggplot(aes(x=tmin_fahr, y=tmax_fahr))+
+  geom_point()+
+  geom_smooth(se=FALSE, method = "lm")
+  
+```
+
+##Small things
+
+```{r}
+weather_df |> 
+  ggplot(aes(x=tmin, y=tmax, color=name, shape=name))+
+  #geom_point(alpha=0.3)+
+  geom_smooth(se=FALSE)
+
+weather_df |> 
+  ggplot(aes(x=tmin, y=tmax, color=name, shape=name))+
+  geom_smooth(se=FALSE)+
+  geom_point()
+```
+
+```{r}
+weather_df |> 
+  ggplot(aes(x=tmin, y=tmax))+
+  geom_hex()
+```
+
+```{r}
+weather_df |> 
+  ggplot(aes(x=tmin, y=tmax))+
+  geom_point(color="purple")
+```
+
+```{r}
+weather_df |> 
+  ggplot(aes(x=tmin))+
+  geom_histogram(color="white", fill= "blue")
+```
+
+```{r}
+weather_df |> 
+  ggplot(aes(x=tmin, color=name))+
+  geom_histogram()
+
+weather_df |> 
+  ggplot(aes(x=tmin, fill=name))+
+  geom_histogram()
+```
+
+how would i fix this? maybe facet?
+
+```{r}
+weather_df |> 
+  ggplot(aes(x=tmin, fill=name))+
+  geom_histogram()+
+  facet_grid(name ~ .)
+```
+
+
+```{r}
+weather_df |> 
+  ggplot(aes(x=tmin, fill=name))+
+  geom_density(alpha=0.2)
+```
+
+```{r}
+weather_df |> 
+  ggplot(aes(x=name, y=tmin))+
+  geom_boxplot(aes(fill=name))
+```
+
+Violin plots
+
+```{r}
+weather_df |> 
+  ggplot(aes(x=name, y=tmin, fill=name))+
+  geom_violin()
+```
+
+ridge plot
+
+```{r}
+weather_df |> 
+  ggplot(aes(x=tmin, y=name, fill=name))+
+  geom_density_ridges()
+```
+
+Learning Assessment 2
+
+```{r}
+weather_df |> 
+  janitor::clean_names() |> 
+  ggplot(aes(x=prcp, fill=name))+
+  geom_density(alpha=0.2)
+
+weather_df |> 
+  janitor::clean_names() |> 
+  ggplot(aes(x=prcp, fill=name))+
+  geom_histogram()+
+  facet_grid(name ~ .)
+
+
+weather_df |> 
+  janitor::clean_names() |> 
+  filter(prcp>5, prcp<1000) |> 
+  ggplot(aes(x=prcp, fill=name))+
+  geom_density(alpha=0.2)
+```
+
+
+##Saving and embedding plots
+
+Saving plots
+
+```{r}
+ggplot_weather_violin = 
+  weather_df |> 
+  ggplot(aes(x=name, y=tmin, fill=name))+
+  geom_violin()
+
+ggplot_weather_violin
+
+ggsave("violin_plot.pdf", ggplot_weather_violin, width = 8, heigh = 6)
+```
+
+
+
+
+
+
+
+
+
